@@ -300,7 +300,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </AlertDialogCancel>
         <AlertDialogAction
           onClick={onConfirm}
-          className="bg-red-800 transition-colors hover:bg-red-950"
+          className="bg-red-800 text-white transition-colors hover:bg-red-950"
         >
           <X className="mr-2 h-4 w-4" />
           <span>{confirmText}</span>
@@ -433,7 +433,6 @@ export default function Home() {
     } else {
       processEstimate(data, 1); // Pass 1 as the screen fee multiplier for single location prints
     }
-    setShowAddToEstimate(false); // Hide the button after adding to estimate
   };
 
   const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
@@ -482,6 +481,7 @@ export default function Home() {
       }
     });
     setShowCalculateButton(true);
+    setShowAddToEstimate(true);
     resetFormFields();
   };
 
@@ -618,7 +618,7 @@ export default function Home() {
         </h1>
 
         <div className="mx-auto mb-6 max-w-2xl text-pretty text-left text-gray-600 dark:text-gray-300">
-          <p className="mb-4">Follow these steps to create your estimate:</p>
+          <h2 className="font-extrabold mb-4">Follow these steps to create your estimate:</h2>
           <ul className="list-none space-y-2">
             <li>
               • 👕 Select a Brand and identify the brightness of your fabric{" "}
@@ -685,12 +685,9 @@ export default function Home() {
 
         <form onSubmit={handleSubmit(addToEstimate)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="brand" className="text-md font-bold">
-              Brand:
+            <Label htmlFor="brand" className="text-md font-extrabold">
+              Choose a blanks brand
             </Label>
-            <p className="text-sm">
-              (hint: select the brand of garments you&apos;re using)
-            </p>
             <Controller
               name="brand"
               control={control}
@@ -707,11 +704,11 @@ export default function Home() {
             )}
           </div>
 
-          <div className="space-y-4">
-            <Label htmlFor="garmentColor" className="text-md font-bold">
+          <div className="space-y-2">
+            <Label htmlFor="garmentColor" className="text-md font-extrabold">
               Light or Dark garment?
             </Label>
-            <p className="text-sm">
+            <p className="text-sm font-extralight ">
               (hint: darker colored fabrics require a white underbase to print
               on)
             </p>
@@ -738,10 +735,10 @@ export default function Home() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="printLocations" className="text-md font-bold">
+            <Label htmlFor="printLocations" className="text-md font-extrabold">
               How many graphic placements are required for this design?
             </Label>
-            <p className="text-sm">
+            <p className="text-sm font-extralight ">
               (hint: if you have a design that requires a full back and a front
               left chest pocket, that&apos;s 2 graphic placements)
             </p>
@@ -773,10 +770,10 @@ export default function Home() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-md font-bold" htmlFor="colorCount">
+            <Label className="text-md font-extrabold" htmlFor="colorCount">
               How many colors are in this design?
             </Label>
-            <p className="text-sm">
+            <p className="text-sm font-extralight">
               (hint: if 2 or more graphic placements, count only the unique
               colors)
             </p>
@@ -809,11 +806,13 @@ export default function Home() {
             )}
           </div>
 
-          <div>
-            <Label className="text-base">
-              How many of each garment? (hint: leave it blank for zero)
+          <div className="space-y-2">
+            <Label className="font-extrabold text-md">
+              How many of each garment? 
             </Label>
-            <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <p className="text-sm font-extralight">(hint: leave it blank for zero)</p>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {items.map((item) => (
                 <GarmentQuantityInput
                   key={item.name}
@@ -824,7 +823,6 @@ export default function Home() {
                 />
               ))}
             </div>
-          </div>
 
           {showAddToEstimate && (
             <Button
