@@ -47,7 +47,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 type FormInputs = {
   garmentColor: "light" | "dark" | undefined;
@@ -499,7 +498,6 @@ export default function Home() {
   };
 
   return (
-    <TooltipProvider>
     <div className={`min-h-screen p-4 ${isDarkMode ? 'dark bg-black' :'bg-stone-200'}`}>
       <div className="max-w-4xl mx-auto bg-white dark:bg-black p-8 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-8">
@@ -567,7 +565,8 @@ export default function Home() {
         
         <form onSubmit={handleSubmit(addToEstimate)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="brand">Brand:</Label>
+            <Label htmlFor="brand" className='font-bold text-md'>Brand:</Label>
+            <p className='text-sm'>(hint: select the brand of garments you&apos;re using)</p>
             <Controller
               name="brand"
               control={control}
@@ -580,14 +579,8 @@ export default function Home() {
           </div>
 
           <div className="space-y-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Label htmlFor="garmentColor">Garment Color</Label>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Dark garments cost more to print on due to the need for an additional white base layer to make colors vibrant.</p>
-              </TooltipContent>
-            </Tooltip>
+            <Label htmlFor="garmentColor" className='font-bold text-md'>Light or Dark garment?</Label>
+            <p className='text-sm'>(hint: darker colored fabrics require a white underbase to print on)</p>
             <Controller
               name="garmentColor"
               control={control}
@@ -609,14 +602,8 @@ export default function Home() {
           </div>
 
           <div className="space-y-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Label htmlFor="printLocations">Number of Print Locations</Label>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Each unique artwork requires a new screen to be burned, which increases the setup cost.</p>
-              </TooltipContent>
-            </Tooltip>
+            <Label htmlFor="printLocations" className='font-bold text-md'>How many graphic placements are required for this design?</Label>
+            <p className='text-sm'>(hint: if you have a design that requires a full back and a front left chest pocket, that&apos;s 2 graphic placements)</p>
             <Controller
               name="printLocations"
               control={control}
@@ -638,7 +625,8 @@ export default function Home() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="colorCount">Number of Colors in Design:</Label>
+            <Label className='font-bold text-md' htmlFor="colorCount">How many colors are in this design?</Label>
+            <p className='text-sm'>(hint: if 2 or more graphic placements, count only the unique colors)</p>
             <Controller
               name="colorCount"
               control={control}
@@ -662,7 +650,7 @@ export default function Home() {
           </div>
 
           <div>
-            <Label className="text-base">How many of each garment?</Label>
+            <Label className="text-base">How many of each garment? (hint: leave it blank for zero)</Label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
               {items.map((item) => (
                 <GarmentQuantityInput
@@ -828,17 +816,26 @@ export default function Home() {
         className='text-white'
       />
       <Dialog open={isNamePromptOpen} onOpenChange={setIsNamePromptOpen}>
-        <DialogContent>
+        <DialogContent  onKeyDown={(e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNameSubmit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsNamePromptOpen(false);
+            }
+          }}>
           <DialogHeader>
             <DialogTitle>Name Your Estimate</DialogTitle>
             <DialogDescription>
-              <span className="font-bold">Enter a name for this estimate (ex. &apos;Tour Merch&apos;):</span>
+              <span className="font-bold">Name your estimate (ex. &apos;Tour Merch&apos;):</span>
             </DialogDescription>
           </DialogHeader>
           <Input
             value={estimateName}
             onChange={(e) => setEstimateName(e.target.value)}
             placeholder="Estimate name"
+            autoFocus
           />
           <DialogFooter>
             <Button 
@@ -857,6 +854,5 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </div>
-    </TooltipProvider>
   )
 }
