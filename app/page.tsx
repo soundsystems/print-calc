@@ -294,7 +294,6 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showCalculateButton, setShowCalculateButton] = useState(false);
   const [isArtworkPopupOpen, setIsArtworkPopupOpen] = useState(false);
-  const [uniqueArtworkCount, setUniqueArtworkCount] = useState(1);
   const [pinnedEstimates, setPinnedEstimates] = useState<Estimate[]>([]);
   const [formError, setFormError] = useState('');
   const [isEstimateCalculated, setIsEstimateCalculated] = useState(false);
@@ -302,6 +301,7 @@ export default function Home() {
   const [isNewEstimateDialogOpen, setIsNewEstimateDialogOpen] = useState(false);
   const [isNamePromptOpen, setIsNamePromptOpen] = useState(false);
   const [estimateName, setEstimateName] = useState('');
+  const [showAddToEstimate, setShowAddToEstimate] = useState(true);
 
   const { register, handleSubmit, setValue, reset, watch, control, getValues, formState: { errors }, clearErrors } = useForm<FormInputs>({
     defaultValues: {
@@ -353,11 +353,12 @@ export default function Home() {
     if (Number(data.printLocations) > 1) {
       setIsArtworkPopupOpen(true);
     } else {
-      processEstimate(data); // Pass 1 as the screen fee multiplier for single location prints
+      processEstimate(data, 1); // Pass 1 as the screen fee multiplier for single location prints
     }
+    setShowAddToEstimate(false);  // Hide the button after adding to estimate
   };
 
-  const processEstimate = (data: FormInputs) => {
+  const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
     const newItems = items
       .map((item) => {
         const quantity = Number(data[`gmt${item.name}`]) || 0;
@@ -381,7 +382,7 @@ export default function Home() {
       })
       .filter((item): item is EstimateItem => item !== null);
     const total = newItems.reduce((sum, item) => sum + item.total, 0);
-    const screenFee = calculateScreenFee(newItems);
+    const screenFee = calculateScreenFee(newItems, screenFeeMultiplier);
     setCurrentEstimate((prevEstimate) => {
       if (prevEstimate) {
         return {
@@ -415,10 +416,10 @@ export default function Home() {
     return colorCount * printLocations * 0.5;
   };
 
-  const calculateScreenFee = (items: EstimateItem[]): number => {
+  const calculateScreenFee = (items: EstimateItem[], screenFeeMultiplier: number): number => {
     if (items.length === 0) return 0;
     const uniqueLocations = new Set(items.map(item => item.printLocations));
-    return uniqueLocations.size * 20 * uniqueArtworkCount;
+    return uniqueLocations.size * 20 * screenFeeMultiplier;
   }
 
   const pinEstimate = () => {
@@ -457,9 +458,8 @@ export default function Home() {
 
   const handleArtworkConfirm = (isSameArtwork: boolean, screenFeeMultiplier: number) => {
     setIsArtworkPopupOpen(false);
-    setUniqueArtworkCount(screenFeeMultiplier);
     const formData = getValues();
-    processEstimate(formData);
+    processEstimate(formData, screenFeeMultiplier);
   };
 
   const resetEstimate = () => {
@@ -468,6 +468,7 @@ export default function Home() {
     setIsEstimateCalculated(false);
     resetFormFields();
     setIsDrawerOpen(false);
+    setShowAddToEstimate(true);  // Reset this when clearing the estimate
     toast({
       title: "Current Estimate Cleared (Don't worry, your pinned ones are safe!)",
       description: "You can now start a new estimate.",
@@ -481,6 +482,7 @@ export default function Home() {
     resetFormFields();
     setIsDrawerOpen(false);
     setIsDeleteConfirmOpen(false);
+    setShowAddToEstimate(true);  // Reset this when deleting the estimate
     toast({
       title: "Estimate Deleted",
       description: "You can now start a new estimate.",
@@ -674,9 +676,11 @@ export default function Home() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full text-white hover:dark:bg-violet-700 bg-violet-950 font-semibold">
-            Add to Estimate <Plus className="ml-2 h-4 w-4" />
-          </Button>
+          {showAddToEstimate && (
+            <Button type="submit" className="w-full text-white hover:dark:bg-violet-700 bg-violet-950 font-semibold">
+              Add to Estimate <Plus className="ml-2 h-4 w-4" />
+            </Button>
+          )}
           {formError && <p className="text-red-500">{formError}</p>}
         </form>
 
@@ -804,7 +808,7 @@ export default function Home() {
                 variant="outline" 
                 size="sm" 
                 onClick={() => openDrawer(estimate)} 
-                className="mt-2 w-full hover:bg-violet-700 hover:text-white"
+                className="mt-2 w-full hover:bg-violet-700 hover:text-white font-semibold"
               >
                 View Details
               </Button>

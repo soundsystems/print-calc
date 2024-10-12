@@ -65,6 +65,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    touch-action: manipulation;
   }
 }
 
@@ -86,4 +87,9 @@ input[type="tel"],
 input[type="password"],
 textarea {
   font-size: 18px;
+}
+
+/* Add this at the end of the file */
+html, body {
+  touch-action: manipulation;
 }

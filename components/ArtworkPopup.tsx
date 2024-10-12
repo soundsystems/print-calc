@@ -46,7 +46,12 @@ export function ArtworkPopup({ isOpen, onClose, printLocations, onConfirm }: Art
               </Button>
               <Button
                 variant={isSameArtwork === false ? "default" : "outline"}
-                onClick={() => setIsSameArtwork(false)}
+                onClick={() => {
+                  setIsSameArtwork(false);
+                  if (printLocations <= 2) {
+                    handleConfirm(false);
+                  }
+                }}
               >
                 No
               </Button>
