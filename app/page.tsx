@@ -1,19 +1,45 @@
-'use client'
+"use client";
 
-import React, { useState} from 'react'
-import { useForm, SubmitHandler, UseFormRegister, UseFormWatch, UseFormSetValue, Controller } from "react-hook-form";
-import Image from 'next/image'
-import { Moon, Sun, Plus, Pin, Minus, X } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import React, { useState } from "react";
+import {
+  useForm,
+  SubmitHandler,
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+  Controller,
+} from "react-hook-form";
+import Image from "next/image";
+import { Moon, Sun, Plus, Pin, Minus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { ArtworkPopup } from "@/components/ArtworkPopup";
-import { useToast } from "@/hooks/use-toast"
-import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import {
   Command,
   CommandEmpty,
@@ -21,14 +47,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +64,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -57,10 +83,10 @@ type FormInputs = {
 };
 
 interface Item {
-  name: string
-  unitPrice: number
-  darkUnitPrice: number
-  emoji: string
+  name: string;
+  unitPrice: number;
+  darkUnitPrice: number;
+  emoji: string;
 }
 
 interface Estimate {
@@ -87,13 +113,13 @@ interface EstimateItem {
 }
 
 const items: Item[] = [
-  { name: 'T-Shirt', unitPrice: 5, darkUnitPrice: 6, emoji: '👕' },
-  { name: 'Crewneck', unitPrice: 11, darkUnitPrice: 13, emoji: '🧥' },
-  { name: 'Hoodie', unitPrice: 18, darkUnitPrice: 20, emoji: '🦸' },
-  { name: 'Long Sleeve', unitPrice: 9, darkUnitPrice: 11, emoji: '👚' },
-]
+  { name: "T-Shirt", unitPrice: 5, darkUnitPrice: 6, emoji: "👕" },
+  { name: "Crewneck", unitPrice: 11, darkUnitPrice: 13, emoji: "🧥" },
+  { name: "Hoodie", unitPrice: 18, darkUnitPrice: 20, emoji: "🦸" },
+  { name: "Long Sleeve", unitPrice: 9, darkUnitPrice: 11, emoji: "👚" },
+];
 
-const brands = ['Gildan', 'Bella + Canvas', 'Next Level', 'American Apparel']
+const brands = ["Gildan", "Bella + Canvas", "Next Level", "American Apparel"];
 
 const calculateUnitPrice = (quantity: number): number => {
   // This is a placeholder pricing logic. Adjust according to your actual pricing strategy.
@@ -104,8 +130,14 @@ const calculateUnitPrice = (quantity: number): number => {
   return 6;
 };
 
-const BrandSelector = ({ onValueChange, value }: { onValueChange: (value: string) => void, value: string }) => {
-  const [open, setOpen] = React.useState(false)
+const BrandSelector = ({
+  onValueChange,
+  value,
+}: {
+  onValueChange: (value: string) => void;
+  value: string;
+}) => {
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -116,9 +148,7 @@ const BrandSelector = ({ onValueChange, value }: { onValueChange: (value: string
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value
-            ? brands.find((brand) => brand === value)
-            : "Select brand..."}
+          {value ? brands.find((brand) => brand === value) : "Select brand..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -133,14 +163,14 @@ const BrandSelector = ({ onValueChange, value }: { onValueChange: (value: string
                   key={brand}
                   value={brand}
                   onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue)
-                    setOpen(false)
+                    onValueChange(currentValue === value ? "" : currentValue);
+                    setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === brand ? "opacity-100" : "opacity-0"
+                      value === brand ? "opacity-100" : "opacity-0",
                     )}
                   />
                   {brand}
@@ -151,15 +181,19 @@ const BrandSelector = ({ onValueChange, value }: { onValueChange: (value: string
         </Command>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-
-const GarmentQuantityInput = ({ item, register, watch, setValue }: { 
-  item: Item, 
-  register: UseFormRegister<FormInputs>,
-  watch: UseFormWatch<FormInputs>,
-  setValue: UseFormSetValue<FormInputs>
+const GarmentQuantityInput = ({
+  item,
+  register,
+  watch,
+  setValue,
+}: {
+  item: Item;
+  register: UseFormRegister<FormInputs>;
+  watch: UseFormWatch<FormInputs>;
+  setValue: UseFormSetValue<FormInputs>;
 }) => {
   const quantity = watch(`gmt${item.name}` as const);
 
@@ -177,27 +211,49 @@ const GarmentQuantityInput = ({ item, register, watch, setValue }: {
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={`gmt${item.name}`} className="text-center font-bold block">{item.name} {item.emoji}</Label>
+      <Label
+        htmlFor={`gmt${item.name}`}
+        className="block text-center font-bold"
+      >
+        {item.name} {item.emoji}
+      </Label>
       <div className="flex items-center space-x-2">
-        <Button type="button" variant="outline" size="icon" onClick={() => setValue(`gmt${item.name}`, Math.max(0, (Number(quantity) || 0) - 1))}>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            setValue(
+              `gmt${item.name}`,
+              Math.max(0, (Number(quantity) || 0) - 1),
+            )
+          }
+        >
           <Minus className="h-4 w-4" />
         </Button>
         <Input
           type="number"
           id={`gmt${item.name}`}
-          {...register(`gmt${item.name}`, { 
+          {...register(`gmt${item.name}`, {
             valueAsNumber: true,
             min: 0,
-            onChange: handleInputChange
+            onChange: handleInputChange,
           })}
           className="w-20 text-center"
           min="0"
           step="1"
-          value={quantity === 0 ? '' : quantity}
-          inputMode='numeric'
+          value={quantity === 0 ? "" : quantity}
+          inputMode="numeric"
           pattern="[0-9]*"
         />
-        <Button type="button" variant="outline" size="icon" onClick={() => setValue(`gmt${item.name}`, (Number(quantity) || 0) + 1)}>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            setValue(`gmt${item.name}`, (Number(quantity) || 0) + 1)
+          }
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -214,7 +270,7 @@ interface ConfirmDialogProps {
   description: string;
   confirmText: string;
   cancelText: string;
-  className?: string; 
+  className?: string;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -226,7 +282,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   description,
   confirmText,
   cancelText,
-  className 
+  className,
 }) => (
   <AlertDialog open={isOpen} onOpenChange={onClose}>
     <AlertDialogContent className={className}>
@@ -235,14 +291,17 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <AlertDialogDescription>{description}</AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel 
-          onClick={onCancel} 
-          className="bg-lime-800 hover:bg-lime-600 hover:text-white transition-colors group"
+        <AlertDialogCancel
+          onClick={onCancel}
+          className="group bg-lime-800 transition-colors hover:bg-lime-600 hover:text-white"
         >
-          <Pin className="mr-2 h-4 w-4 group-hover:fill-white transition-colors" />
+          <Pin className="mr-2 h-4 w-4 transition-colors group-hover:fill-white" />
           {cancelText}
         </AlertDialogCancel>
-        <AlertDialogAction onClick={onConfirm} className="bg-red-800 hover:bg-red-950 transition-colors">
+        <AlertDialogAction
+          onClick={onConfirm}
+          className="bg-red-800 transition-colors hover:bg-red-950"
+        >
           <X className="mr-2 h-4 w-4" />
           <span>{confirmText}</span>
         </AlertDialogAction>
@@ -251,41 +310,44 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   </AlertDialog>
 );
 
-const groupEstimateItems = (items: EstimateItem[]): Record<string, EstimateItem[]> => {
+const groupEstimateItems = (
+  items: EstimateItem[],
+): Record<string, EstimateItem[]> => {
   const groupedItems: Record<string, EstimateItem[]> = {};
   const itemCounts: Record<string, number> = {};
 
   items.forEach((item) => {
     const baseKey = item.name;
     const fullKey = `${item.name}-${item.printLocations}-${item.colorCount}-${item.isDark}-${item.brand}`;
-    
+
     if (!groupedItems[fullKey]) {
       groupedItems[fullKey] = [];
       itemCounts[baseKey] = (itemCounts[baseKey] || 0) + 1;
     }
-    
+
     groupedItems[fullKey].push(item);
   });
-  
+
   const finalGroupedItems: Record<string, EstimateItem[]> = {};
-  
+
   Object.entries(groupedItems).forEach(([key, items]) => {
-    const [name] = key.split('-');
+    const [name] = key.split("-");
     let displayName = name;
-    
+
     if (itemCounts[name] > 1) {
-      const existingKeys = Object.keys(finalGroupedItems).filter(k => k.startsWith(name));
+      const existingKeys = Object.keys(finalGroupedItems).filter((k) =>
+        k.startsWith(name),
+      );
       if (existingKeys.length > 0) {
         displayName = `${name} ${existingKeys.length + 1}`;
       }
     }
-    
+
     finalGroupedItems[displayName] = items;
   });
 
   return finalGroupedItems;
 };
-
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -294,21 +356,31 @@ export default function Home() {
   const [showCalculateButton, setShowCalculateButton] = useState(false);
   const [isArtworkPopupOpen, setIsArtworkPopupOpen] = useState(false);
   const [pinnedEstimates, setPinnedEstimates] = useState<Estimate[]>([]);
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
   const [isEstimateCalculated, setIsEstimateCalculated] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isNewEstimateDialogOpen, setIsNewEstimateDialogOpen] = useState(false);
   const [isNamePromptOpen, setIsNamePromptOpen] = useState(false);
-  const [estimateName, setEstimateName] = useState('');
+  const [estimateName, setEstimateName] = useState("");
   const [showAddToEstimate, setShowAddToEstimate] = useState(true);
 
-  const { register, handleSubmit, setValue, reset, watch, control, getValues, formState: { errors }, clearErrors } = useForm<FormInputs>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    control,
+    getValues,
+    formState: { errors },
+    clearErrors,
+  } = useForm<FormInputs>({
     defaultValues: {
       garmentColor: undefined,
       printLocations: undefined,
       colorCount: undefined,
-      brand: '',
-    }
+      brand: "",
+    },
   });
   const { toast } = useToast();
 
@@ -317,35 +389,42 @@ export default function Home() {
       garmentColor: undefined,
       printLocations: undefined,
       colorCount: undefined,
-      brand: '',
-      ...items.reduce((acc, item) => ({ ...acc, [`gmt${item.name}`]: '' }), {}),
+      brand: "",
+      ...items.reduce((acc, item) => ({ ...acc, [`gmt${item.name}`]: "" }), {}),
     });
-    setValue('brand', '');
-    setValue('printLocations', undefined);
-    setValue('colorCount', undefined);
-    setValue('garmentColor', undefined);
-    items.forEach(item => setValue(`gmt${item.name}`, ''));
+    setValue("brand", "");
+    setValue("printLocations", undefined);
+    setValue("colorCount", undefined);
+    setValue("garmentColor", undefined);
+    items.forEach((item) => setValue(`gmt${item.name}`, ""));
   };
 
   const addToEstimate: SubmitHandler<FormInputs> = (data) => {
-    setFormError('');
+    setFormError("");
     clearErrors();
 
-    const emptyFields = Object.entries(data).filter(([key, value]) => 
-      value === '' || value === undefined || (key.startsWith('gmt') && Number(value) === 0)
+    const emptyFields = Object.entries(data).filter(
+      ([key, value]) =>
+        value === "" ||
+        value === undefined ||
+        (key.startsWith("gmt") && Number(value) === 0),
     );
 
     if (emptyFields.length > 0) {
-      setFormError(`Please fill in the following fields: ${emptyFields.map(([key]) => key).join(', ')}`);
+      setFormError(
+        `Please fill in the following fields: ${emptyFields.map(([key]) => key).join(", ")}`,
+      );
       return;
     }
 
-    const negativeFields = Object.entries(data).filter(([key, value]) => 
-      key.startsWith('gmt') && Number(value) < 0
+    const negativeFields = Object.entries(data).filter(
+      ([key, value]) => key.startsWith("gmt") && Number(value) < 0,
     );
 
     if (negativeFields.length > 0) {
-      setFormError(`Quantity cannot be negative for: ${negativeFields.map(([key]) => key.substring(3)).join(', ')}`);
+      setFormError(
+        `Quantity cannot be negative for: ${negativeFields.map(([key]) => key.substring(3)).join(", ")}`,
+      );
       return;
     }
 
@@ -354,7 +433,7 @@ export default function Home() {
     } else {
       processEstimate(data, 1); // Pass 1 as the screen fee multiplier for single location prints
     }
-    setShowAddToEstimate(false);  // Hide the button after adding to estimate
+    setShowAddToEstimate(false); // Hide the button after adding to estimate
   };
 
   const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
@@ -363,9 +442,12 @@ export default function Home() {
         const quantity = Number(data[`gmt${item.name}`]) || 0;
         if (quantity === 0) return null;
         const unitPrice = calculateUnitPrice(quantity);
-        const isDark = data.garmentColor === 'dark';
+        const isDark = data.garmentColor === "dark";
         const darkUnitPrice = isDark ? unitPrice + 1 : unitPrice;
-        const printCost = calculatePrintCost(Number(data.colorCount), Number(data.printLocations));
+        const printCost = calculatePrintCost(
+          Number(data.colorCount),
+          Number(data.printLocations),
+        );
         return {
           ...item,
           quantity,
@@ -410,16 +492,22 @@ export default function Home() {
     }
   };
 
-  const calculatePrintCost = (colorCount: number, printLocations: number): number => {
+  const calculatePrintCost = (
+    colorCount: number,
+    printLocations: number,
+  ): number => {
     // This is a placeholder. Adjust the calculation based on your actual pricing strategy.
     return colorCount * printLocations * 0.5;
   };
 
-  const calculateScreenFee = (items: EstimateItem[], screenFeeMultiplier: number): number => {
+  const calculateScreenFee = (
+    items: EstimateItem[],
+    screenFeeMultiplier: number,
+  ): number => {
     if (items.length === 0) return 0;
-    const uniqueLocations = new Set(items.map(item => item.printLocations));
+    const uniqueLocations = new Set(items.map((item) => item.printLocations));
     return uniqueLocations.size * 20 * screenFeeMultiplier;
-  }
+  };
 
   const pinEstimate = () => {
     if (!currentEstimate) return;
@@ -431,18 +519,21 @@ export default function Home() {
       const pinnedEstimate: Estimate = {
         ...currentEstimate,
         name: estimateName,
-        isPinned: true
+        isPinned: true,
       };
-      setPinnedEstimates(prevEstimates => [...prevEstimates, pinnedEstimate]);
+      setPinnedEstimates((prevEstimates) => [...prevEstimates, pinnedEstimate]);
       setCurrentEstimate(null);
       setIsDrawerOpen(false);
       setIsNamePromptOpen(false);
-      setEstimateName('');
+      setEstimateName("");
       toast({
         title: "Estimate Pinned",
         description: `"${estimateName}" has been pinned`,
         action: (
-          <ToastAction altText="View Estimate" onClick={() => openDrawer(pinnedEstimate)}>
+          <ToastAction
+            altText="View Estimate"
+            onClick={() => openDrawer(pinnedEstimate)}
+          >
             View
           </ToastAction>
         ),
@@ -455,7 +546,10 @@ export default function Home() {
     setIsDrawerOpen(true);
   };
 
-  const handleArtworkConfirm = (isSameArtwork: boolean, screenFeeMultiplier: number) => {
+  const handleArtworkConfirm = (
+    isSameArtwork: boolean,
+    screenFeeMultiplier: number,
+  ) => {
     setIsArtworkPopupOpen(false);
     const formData = getValues();
     processEstimate(formData, screenFeeMultiplier);
@@ -467,9 +561,10 @@ export default function Home() {
     setIsEstimateCalculated(false);
     resetFormFields();
     setIsDrawerOpen(false);
-    setShowAddToEstimate(true);  // Reset this when clearing the estimate
+    setShowAddToEstimate(true); // Reset this when clearing the estimate
     toast({
-      title: "Current Estimate Cleared (Don't worry, your pinned ones are safe!)",
+      title:
+        "Current Estimate Cleared (Don't worry, your pinned ones are safe!)",
       description: "You can now start a new estimate.",
     });
   };
@@ -481,7 +576,7 @@ export default function Home() {
     resetFormFields();
     setIsDrawerOpen(false);
     setIsDeleteConfirmOpen(false);
-    setShowAddToEstimate(true);  // Reset this when deleting the estimate
+    setShowAddToEstimate(true); // Reset this when deleting the estimate
     toast({
       title: "Estimate Deleted",
       description: "You can now start a new estimate.",
@@ -494,13 +589,15 @@ export default function Home() {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(prevMode => !prevMode);
+    setIsDarkMode((prevMode) => !prevMode);
   };
 
   return (
-    <div className={`min-h-screen p-4 ${isDarkMode ? 'dark bg-black' :'bg-stone-200'}`}>
-      <div className="max-w-4xl mx-auto bg-white dark:bg-black p-8 rounded-lg shadow-lg">
-        <div className="flex justify-between items-center mb-8">
+    <div
+      className={`min-h-screen p-4 ${isDarkMode ? "dark bg-black" : "bg-stone-200"}`}
+    >
+      <div className="mx-auto max-w-4xl rounded-lg bg-white p-8 shadow-lg dark:bg-black">
+        <div className="mb-8 flex items-center justify-between">
           <Image src="/logo.png" alt="MSA Logo" width={200} height={200} />
           <Button
             variant="outline"
@@ -508,19 +605,39 @@ export default function Home() {
             onClick={toggleDarkMode}
             className="rounded-full border-2 border-black dark:border-white"
           >
-            {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+            {isDarkMode ? (
+              <Sun className="h-[1.2rem] w-[1.2rem]" />
+            ) : (
+              <Moon className="h-[1.2rem] w-[1.2rem]" />
+            )}
           </Button>
         </div>
-        
-        <h1 className="text-3xl font-bold mb-4 text-center dark:text-white">Screen-Print Estimator 🖨️</h1>
-        
-        <div className="mb-6 text-pretty text-gray-600 dark:text-gray-300 text-left max-w-2xl mx-auto">
+
+        <h1 className="mb-4 text-center text-3xl font-bold dark:text-white">
+          Screen-Print Estimator 🖨️
+        </h1>
+
+        <div className="mx-auto mb-6 max-w-2xl text-pretty text-left text-gray-600 dark:text-gray-300">
           <p className="mb-4">Follow these steps to create your estimate:</p>
           <ul className="list-none space-y-2">
-            <li>• 👕 Select a Brand and identify the brightness of your fabric <br /> (please note: darker colored fabrics require a white ink underbase)</li>
-            <li>• ➕ Use &quot;Add to Estimate&quot; for multi-part estimates<br /> (e.g., designs for both light and dark garments or combining blanks from multiple brands)</li>
-            <li>• 🖼️ Add multiple print locations for each design<br /> (e.g., full back + front left-chest pocket)</li>
-            <li>• 🏷️ Fill out the form separately for each design and each brand of blanks</li>
+            <li>
+              • 👕 Select a Brand and identify the brightness of your fabric{" "}
+              <br /> (please note: darker colored fabrics require a white ink
+              underbase)
+            </li>
+            <li>
+              • ➕ Use &quot;Add to Estimate&quot; for multi-part estimates
+              <br /> (e.g., designs for both light and dark garments or
+              combining blanks from multiple brands)
+            </li>
+            <li>
+              • 🖼️ Add multiple print locations for each design
+              <br /> (e.g., full back + front left-chest pocket)
+            </li>
+            <li>
+              • 🏷️ Fill out the form separately for each design and each brand
+              of blanks
+            </li>
             <li>• 🔢 Input quantities for each size</li>
             <li>• 💡 Provide any additional details or requirements</li>
             <li>• 🧮 Click &apos;Calculate&apos; to get your estimate</li>
@@ -528,17 +645,20 @@ export default function Home() {
             <li>• 🔄 Use &apos;New Estimate&apos; to start over at any time</li>
           </ul>
         </div>
-        
+
         {(isEstimateCalculated || currentEstimate) && (
           <>
             <Button
               onClick={() => setIsNewEstimateDialogOpen(true)}
-              className="mb-4 w-full hover:bg-violet-700 text-white font-semibold bg-indigo-400"
+              className="mb-4 w-full bg-indigo-400 font-semibold text-white hover:bg-violet-700"
             >
               New Estimate
             </Button>
 
-            <AlertDialog open={isNewEstimateDialogOpen} onOpenChange={setIsNewEstimateDialogOpen}>
+            <AlertDialog
+              open={isNewEstimateDialogOpen}
+              onOpenChange={setIsNewEstimateDialogOpen}
+            >
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Start a New Estimate?</AlertDialogTitle>
@@ -553,7 +673,7 @@ export default function Home() {
                       resetEstimate();
                       setIsNewEstimateDialogOpen(false);
                     }}
-                    className="bg-red-700 hover:bg-red-950 transition-colors text-white"
+                    className="bg-red-700 text-white transition-colors hover:bg-red-950"
                   >
                     Yes
                   </AlertDialogAction>
@@ -562,25 +682,39 @@ export default function Home() {
             </AlertDialog>
           </>
         )}
-        
+
         <form onSubmit={handleSubmit(addToEstimate)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="brand" className='font-bold text-md'>Brand:</Label>
-            <p className='text-sm'>(hint: select the brand of garments you&apos;re using)</p>
+            <Label htmlFor="brand" className="text-md font-bold">
+              Brand:
+            </Label>
+            <p className="text-sm">
+              (hint: select the brand of garments you&apos;re using)
+            </p>
             <Controller
               name="brand"
               control={control}
               rules={{ required: "Brand is required" }}
               render={({ field }) => (
-                <BrandSelector onValueChange={field.onChange} value={field.value} />
+                <BrandSelector
+                  onValueChange={field.onChange}
+                  value={field.value}
+                />
               )}
             />
-            {errors.brand && <p className="text-red-500">{errors.brand.message}</p>}
+            {errors.brand && (
+              <p className="text-red-500">{errors.brand.message}</p>
+            )}
           </div>
 
           <div className="space-y-4">
-            <Label htmlFor="garmentColor" className='font-bold text-md'>Light or Dark garment?</Label>
-            <p className='text-sm'>(hint: darker colored fabrics require a white underbase to print on)</p>
+            <Label htmlFor="garmentColor" className="text-md font-bold">
+              Light or Dark garment?
+            </Label>
+            <p className="text-sm">
+              (hint: darker colored fabrics require a white underbase to print
+              on)
+            </p>
             <Controller
               name="garmentColor"
               control={control}
@@ -598,60 +732,88 @@ export default function Home() {
                 </RadioGroup>
               )}
             />
-            {errors.garmentColor && <p className="text-red-500">{errors.garmentColor.message}</p>}
+            {errors.garmentColor && (
+              <p className="text-red-500">{errors.garmentColor.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="printLocations" className='font-bold text-md'>How many graphic placements are required for this design?</Label>
-            <p className='text-sm'>(hint: if you have a design that requires a full back and a front left chest pocket, that&apos;s 2 graphic placements)</p>
+            <Label htmlFor="printLocations" className="text-md font-bold">
+              How many graphic placements are required for this design?
+            </Label>
+            <p className="text-sm">
+              (hint: if you have a design that requires a full back and a front
+              left chest pocket, that&apos;s 2 graphic placements)
+            </p>
             <Controller
               name="printLocations"
               control={control}
               rules={{ required: "Print locations are required" }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value?.toString()}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value?.toString()}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select print locations" />
                   </SelectTrigger>
                   <SelectContent>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                      <SelectItem key={num} value={num.toString()}>{num} {num === 1 ? '📍' : '📍'.repeat(num)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.printLocations && <p className="text-red-500">{errors.printLocations.message}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label className='font-bold text-md' htmlFor="colorCount">How many colors are in this design?</Label>
-            <p className='text-sm'>(hint: if 2 or more graphic placements, count only the unique colors)</p>
-            <Controller
-              name="colorCount"
-              control={control}
-              rules={{ required: "Color count is required" }}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value?.toString()}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select color count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map((num) => (
                       <SelectItem key={num} value={num.toString()}>
-                        {num === 5 ? '5+ colors 🌈' : `${num} color${num > 1 ? 's' : ''} ${'🎨'.repeat(num)}`}
+                        {num} {num === 1 ? "📍" : "📍".repeat(num)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               )}
             />
-            {errors.colorCount && <p className="text-red-500">{errors.colorCount.message}</p>}
+            {errors.printLocations && (
+              <p className="text-red-500">{errors.printLocations.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-md font-bold" htmlFor="colorCount">
+              How many colors are in this design?
+            </Label>
+            <p className="text-sm">
+              (hint: if 2 or more graphic placements, count only the unique
+              colors)
+            </p>
+            <Controller
+              name="colorCount"
+              control={control}
+              rules={{ required: "Color count is required" }}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value?.toString()}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select color count" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num === 5
+                          ? "5+ colors 🌈"
+                          : `${num} color${num > 1 ? "s" : ""} ${"🎨".repeat(num)}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.colorCount && (
+              <p className="text-red-500">{errors.colorCount.message}</p>
+            )}
           </div>
 
           <div>
-            <Label className="text-base">How many of each garment? (hint: leave it blank for zero)</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+            <Label className="text-base">
+              How many of each garment? (hint: leave it blank for zero)
+            </Label>
+            <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {items.map((item) => (
                 <GarmentQuantityInput
                   key={item.name}
@@ -665,7 +827,10 @@ export default function Home() {
           </div>
 
           {showAddToEstimate && (
-            <Button type="submit" className="w-full text-white hover:dark:bg-violet-700 bg-violet-950 font-semibold">
+            <Button
+              type="submit"
+              className="w-full bg-violet-950 font-semibold text-white hover:dark:bg-violet-700"
+            >
               Add to Estimate <Plus className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -673,39 +838,54 @@ export default function Home() {
         </form>
 
         {showCalculateButton && (
-          <Button type="button" onClick={calculateEstimate} className="w-full mt-4 bg-lime-800 text-white font-semibold hover:bg-lime-500">
+          <Button
+            type="button"
+            onClick={calculateEstimate}
+            className="mt-4 w-full bg-lime-800 font-semibold text-white hover:bg-lime-500"
+          >
             <span className="font-semibold">Calculate Estimate 🚀</span>
           </Button>
         )}
 
         {isEstimateCalculated && (
-          <Button type="button" onClick={resetEstimate} className="w-full mt-4">
+          <Button type="button" onClick={resetEstimate} className="mt-4 w-full">
             Start Over
           </Button>
         )}
 
-        <Drawer open={isDrawerOpen} onOpenChange={(open) => {
-          if (!open && currentEstimate && !currentEstimate.isPinned) {
-            setIsDeleteConfirmOpen(true);
-          } else {
-            setIsDrawerOpen(open);
-          }
-        }}>
+        <Drawer
+          open={isDrawerOpen}
+          onOpenChange={(open) => {
+            if (!open && currentEstimate && !currentEstimate.isPinned) {
+              setIsDeleteConfirmOpen(true);
+            } else {
+              setIsDrawerOpen(open);
+            }
+          }}
+        >
           <DrawerContent>
             <DrawerHeader>
-              <DrawerTitle>{currentEstimate?.name || "Your Estimate"} 📊</DrawerTitle>
-              <DrawerDescription>Here&apos;s a breakdown of your screen-print estimate</DrawerDescription>
+              <DrawerTitle>
+                {currentEstimate?.name || "Your Estimate"} 📊
+              </DrawerTitle>
+              <DrawerDescription>
+                Here&apos;s a breakdown of your screen-print estimate
+              </DrawerDescription>
             </DrawerHeader>
-            <div className="p-4 overflow-y-auto max-h-[80vh]">
+            <div className="max-h-[80vh] overflow-y-auto p-4">
               {currentEstimate && (
                 <>
-                  {Object.entries(groupEstimateItems(currentEstimate.parts)).map(([key, items], index) => (
+                  {Object.entries(
+                    groupEstimateItems(currentEstimate.parts),
+                  ).map(([key, items], index) => (
                     <div key={index} className="mb-8">
-                      <h3 className="text-lg font-semibold mb-2">{key}</h3>
+                      <h3 className="mb-2 text-lg font-semibold">{key}</h3>
                       <div className="mb-4">
                         <p>Print Locations: {items[0].printLocations}</p>
                         <p>Colors in Design: {items[0].colorCount}</p>
-                        <p>Garment Color: {items[0].isDark ? 'Dark' : 'Light'}</p>
+                        <p>
+                          Garment Color: {items[0].isDark ? "Dark" : "Light"}
+                        </p>
                         <p>Brand: {items[0].brand}</p>
                       </div>
                       <Table>
@@ -721,11 +901,24 @@ export default function Home() {
                         <TableBody>
                           {items.map((item, itemIndex) => (
                             <TableRow key={itemIndex}>
-                              <TableCell className="w-1/3">{item.emoji} {item.name}</TableCell>
-                              <TableCell className="w-1/12">{item.quantity}</TableCell>
-                              <TableCell className="w-1/6">${item.isDark ? item.darkUnitPrice.toFixed(2) : item.unitPrice.toFixed(2)}</TableCell>
-                              <TableCell className="w-1/6">${item.printCost.toFixed(2)}</TableCell>
-                              <TableCell className="w-1/6">${item.total.toFixed(2)}</TableCell>
+                              <TableCell className="w-1/3">
+                                {item.emoji} {item.name}
+                              </TableCell>
+                              <TableCell className="w-1/12">
+                                {item.quantity}
+                              </TableCell>
+                              <TableCell className="w-1/6">
+                                $
+                                {item.isDark
+                                  ? item.darkUnitPrice.toFixed(2)
+                                  : item.unitPrice.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="w-1/6">
+                                ${item.printCost.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="w-1/6">
+                                ${item.total.toFixed(2)}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -734,22 +927,23 @@ export default function Home() {
                   ))}
                   <div className="mt-4">
                     <p>Screen Fee: ${currentEstimate.screenFee.toFixed(2)}</p>
-                    <p className="font-bold">Total: ${currentEstimate.total.toFixed(2)}</p>
+                    <p className="font-bold">
+                      Total: ${currentEstimate.total.toFixed(2)}
+                    </p>
                   </div>
-                  <Button 
+                  <Button
                     onClick={pinEstimate}
-                    className="mt-4 flex items-center w-full bg-lime-800
-                     text-white hover:bg-lime-600 group"
+                    className="group mt-4 flex w-full items-center bg-lime-800 text-white hover:bg-lime-600"
                   >
-                    <Pin className="mr-2 h-4 w-4 group group-hover:fill-white transition-opacity" />
+                    <Pin className="group mr-2 h-4 w-4 transition-opacity group-hover:fill-white" />
                     Pin
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => {
                       setIsNewEstimateDialogOpen(true);
                       setIsDrawerOpen(false);
                     }}
-                    className="mt-2 flex items-center w-full hover:bg-red-600 hover:text-white transition-colors duration-300"
+                    className="mt-2 flex w-full items-center transition-colors duration-300 hover:bg-red-600 hover:text-white"
                   >
                     <X className="mr-2 h-4 w-4 font-semibold" />
                     Start Over
@@ -763,19 +957,25 @@ export default function Home() {
       <ArtworkPopup
         isOpen={isArtworkPopupOpen}
         onClose={() => setIsArtworkPopupOpen(false)}
-        printLocations={Number(watch('printLocations'))}
+        printLocations={Number(watch("printLocations"))}
         onConfirm={handleArtworkConfirm}
       />
       {currentEstimate && (
         <div className="mt-8 flex justify-center">
-          <div className="max-w-md w-48">
-            <h2 className={`text-2xl font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>Current Estimate</h2>
-            <div className="bg-black p-4 rounded-lg shadow mb-4 justify-center text-center">
-              <p className="font-black text-center">Subtotal: ${currentEstimate.total.toFixed(2)}</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setIsDrawerOpen(true)} 
+          <div className="w-48 max-w-md">
+            <h2
+              className={`mb-4 text-center text-2xl font-bold ${isDarkMode ? "text-white" : "text-black"}`}
+            >
+              Current Estimate
+            </h2>
+            <div className="mb-4 justify-center rounded-lg bg-black p-4 text-center shadow">
+              <p className="text-center font-black">
+                Subtotal: ${currentEstimate.total.toFixed(2)}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDrawerOpen(true)}
                 className="mt-2 w-32 font-semibold hover:bg-violet-700 hover:text-white"
               >
                 Details 👀
@@ -786,17 +986,26 @@ export default function Home() {
       )}
 
       <div className="mt-8 flex flex-col items-center">
-        <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>Pinned 📌</h2>
+        <h2
+          className={`mb-4 text-2xl font-bold ${isDarkMode ? "text-white" : "text-black"}`}
+        >
+          Pinned 📌
+        </h2>
         <div className="w-full max-w-md">
           {pinnedEstimates.map((estimate, index) => (
-            <div key={index} className="bg-white dark:bg-black p-4 rounded-lg shadow mb-4">
+            <div
+              key={index}
+              className="mb-4 rounded-lg bg-white p-4 shadow dark:bg-black"
+            >
               <h3 className="text-lg font-semibold">{estimate.name}</h3>
-              <p className="font-bold mt-2">Total: ${estimate.total.toFixed(2)}</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => openDrawer(estimate)} 
-                className="mt-2 w-full hover:bg-violet-700 hover:text-white font-semibold"
+              <p className="mt-2 font-bold">
+                Total: ${estimate.total.toFixed(2)}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openDrawer(estimate)}
+                className="mt-2 w-full font-semibold hover:bg-violet-700 hover:text-white"
               >
                 View Details
               </Button>
@@ -813,22 +1022,26 @@ export default function Home() {
         description="You can pin this estimate to save it, or delete it to start over."
         confirmText="Delete"
         cancelText="Pin"
-        className='text-white'
+        className="text-white"
       />
       <Dialog open={isNamePromptOpen} onOpenChange={setIsNamePromptOpen}>
-        <DialogContent  onKeyDown={(e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleNameSubmit();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      setIsNamePromptOpen(false);
+        <DialogContent
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleNameSubmit();
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              setIsNamePromptOpen(false);
             }
-          }}>
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Name Your Estimate</DialogTitle>
             <DialogDescription>
-              <span className="font-bold">Name your estimate (ex. &apos;Tour Merch&apos;):</span>
+              <span className="font-bold">
+                Name your estimate (ex. &apos;Tour Merch&apos;):
+              </span>
             </DialogDescription>
           </DialogHeader>
           <Input
@@ -838,15 +1051,15 @@ export default function Home() {
             autoFocus
           />
           <DialogFooter>
-            <Button 
+            <Button
               onClick={() => setIsNamePromptOpen(false)}
-              className="bg-red-800 hover:bg-red-950 text-white"
+              className="bg-red-800 text-white hover:bg-red-950"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleNameSubmit}
-              className="bg-lime-800 hover:bg-lime-600 text-white"
+              className="bg-lime-800 text-white hover:bg-lime-600"
             >
               Save
             </Button>
@@ -854,5 +1067,5 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
