@@ -69,7 +69,7 @@ body {
   }
 }
 
-/* Remove increment arrows from number inputs */
+/* Remove uglyincrement arrows from numberic input preview */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 

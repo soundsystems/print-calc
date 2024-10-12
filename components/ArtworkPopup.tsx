@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ArtworkPopupProps {
   isOpen: boolean;
@@ -61,14 +61,21 @@ export function ArtworkPopup({ isOpen, onClose, printLocations, onConfirm }: Art
             <>
               <div>
                 <Label htmlFor="uniqueCount">How many unique artworks?</Label>
-                <Input
-                  id="uniqueCount"
-                  type="number"
-                  min={2}
-                  max={printLocations}
-                  value={uniqueCount}
-                  onChange={(e) => setUniqueCount(Math.min(printLocations, Math.max(2, parseInt(e.target.value) || 2)))}
-                />
+                <Select
+                  value={uniqueCount.toString()}
+                  onValueChange={(value) => setUniqueCount(parseInt(value))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select number of unique artworks" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: printLocations - 1 }, (_, i) => i + 2).map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button onClick={() => handleConfirm(false)}>Confirm</Button>
             </>
