@@ -435,12 +435,6 @@ export default function Home() {
     } else {
       processEstimate(data, 1); // Pass 1 as the screen fee multiplier for single location prints
     }
-
-    // Show success toast
-    toast({
-      title: "Estimate Added",
-      description: "(hint: click 'Add to Estimate' to add more to your order)",
-    });
   };
 
   const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
@@ -554,11 +548,21 @@ export default function Home() {
     setIsDrawerOpen(true);
   };
 
-  const handleArtworkConfirm = (
+  const handleArtworkConfirm = async (
     isSameArtwork: boolean,
     screenFeeMultiplier: number,
   ) => {
+    // Close the popup
     setIsArtworkPopupOpen(false);
+
+    // Wait a short time to ensure the popup is closed before showing the toast
+    await new Promise(resolve => setTimeout(resolve, 100));
+    // Show a toast to confirm 
+    toast({
+      title: "Estimate Added",
+      description: "(hint: click 'Add to Estimate' to add more to your order)",
+    });
+
     const formData = getValues();
     processEstimate(formData, screenFeeMultiplier);
   };

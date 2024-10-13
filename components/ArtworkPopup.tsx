@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface ArtworkPopupProps {
   isOpen: boolean;
   printLocations: number;
-  onConfirm: (isSameArtwork: boolean, screenFeeMultiplier: number) => void;
+  onConfirm: (isSameArtwork: boolean, screenFeeMultiplier: number) => Promise<void>;
 }
 
 export function ArtworkPopup({ isOpen, printLocations, onConfirm }: ArtworkPopupProps) {
@@ -21,21 +21,21 @@ export function ArtworkPopup({ isOpen, printLocations, onConfirm }: ArtworkPopup
     }
   }, [isOpen]);
 
-  const handleConfirm = (sameArtwork: boolean) => {
+  const handleConfirm = async (sameArtwork: boolean) => {
     const screenFeeMultiplier = sameArtwork ? 1 : (printLocations > 2 ? uniqueCount : 2);
-    onConfirm(sameArtwork, screenFeeMultiplier);
+    await onConfirm(sameArtwork, screenFeeMultiplier);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Artwork Information</DialogTitle>
+          <DialogTitle className="text-center">How many unique graphics?</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 text-center">
           <div>
-            <Label>Is the artwork the same for each placement (size, graphic, etc.)?</Label>
-            <div className="flex space-x-4 mt-2">
+            <Label className="text-center text-pretty">Is the artwork exactly the same for each placement (size, graphic, etc.)?</Label>
+            <div className="flex justify-center space-x-4 mt-2">
               <Button
                 variant={isSameArtwork === true ? "default" : "outline"}
                 onClick={() => handleConfirm(true)}
@@ -58,7 +58,7 @@ export function ArtworkPopup({ isOpen, printLocations, onConfirm }: ArtworkPopup
           {isSameArtwork === false && printLocations > 2 && (
             <>
               <div>
-                <Label htmlFor="uniqueCount">How many unique artworks?</Label>
+                <Label htmlFor="uniqueCount" className="text-center">How many unique artworks?</Label>
                 <Select
                   value={uniqueCount.toString()}
                   onValueChange={(value) => setUniqueCount(parseInt(value))}
