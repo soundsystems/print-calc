@@ -56,6 +56,15 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		keyframes: {
+  			'spin-once': {
+  				'0%': { transform: 'rotate(0deg)' },
+  				'100%': { transform: 'rotate(360deg)' },
+  			}
+  		},
+  		animation: {
+  			'spin-once': 'spin-once 0.5s linear',
   		}
   	}
   },

@@ -6,12 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface ArtworkPopupProps {
   isOpen: boolean;
-  onClose: () => void;
   printLocations: number;
   onConfirm: (isSameArtwork: boolean, screenFeeMultiplier: number) => void;
 }
 
-export function ArtworkPopup({ isOpen, onClose, printLocations, onConfirm }: ArtworkPopupProps) {
+export function ArtworkPopup({ isOpen, printLocations, onConfirm }: ArtworkPopupProps) {
   const [isSameArtwork, setIsSameArtwork] = useState<boolean | null>(null);
   const [uniqueCount, setUniqueCount] = useState(2);
 
@@ -25,11 +24,10 @@ export function ArtworkPopup({ isOpen, onClose, printLocations, onConfirm }: Art
   const handleConfirm = (sameArtwork: boolean) => {
     const screenFeeMultiplier = sameArtwork ? 1 : (printLocations > 2 ? uniqueCount : 2);
     onConfirm(sameArtwork, screenFeeMultiplier);
-    onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Artwork Information</DialogTitle>

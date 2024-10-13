@@ -93,3 +93,14 @@ textarea {
 html, body {
   touch-action: manipulation;
 }
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+.pulse {
+  animation: pulse 0.3s ease-in-out;
+}
+

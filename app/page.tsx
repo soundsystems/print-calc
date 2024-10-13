@@ -114,9 +114,9 @@ interface EstimateItem {
 
 const items: Item[] = [
   { name: "T-Shirt", unitPrice: 5, darkUnitPrice: 6, emoji: "👕" },
-  { name: "Crewneck", unitPrice: 11, darkUnitPrice: 13, emoji: "🧥" },
-  { name: "Hoodie", unitPrice: 18, darkUnitPrice: 20, emoji: "🦸" },
-  { name: "Long Sleeve", unitPrice: 9, darkUnitPrice: 11, emoji: "👚" },
+  { name: "Crewneck", unitPrice: 11, darkUnitPrice: 13, emoji: "⛴️" },
+  { name: "Hoodie", unitPrice: 18, darkUnitPrice: 20, emoji: "🥷🏿" },
+  { name: "Long Sleeve", unitPrice: 9, darkUnitPrice: 11, emoji: "🥼" },
 ];
 
 const brands = ["Gildan", "Bella + Canvas", "Next Level", "American Apparel"];
@@ -439,7 +439,7 @@ export default function Home() {
     // Show success toast
     toast({
       title: "Estimate Added",
-      description: "(hint: click &apos;Add to Estimate +&apos; to add more to your order)",
+      description: "(hint: click 'Add to Estimate' to add more to your order)",
     });
   };
 
@@ -837,7 +837,7 @@ export default function Home() {
           {showAddToEstimate && (
             <Button
               type="submit"
-              className={`w-full font-semibold text-white ${
+              className={`w-full font-semibold text-white group ${
                 isFirstEstimate
                   ? "bg-pink-600 hover:bg-pink-400"
                   : "bg-violet-950 hover:dark:bg-violet-700"
@@ -845,11 +845,11 @@ export default function Home() {
             >
               {isFirstEstimate ? (
                 <>
-                  Create an Estimate <Receipt className="ml-2 h-4 w-4" />
+                  Create an Estimate <Receipt className="group ml-2 h-4 w-4 group-hover:rotate-90 transition-transform" />
                 </>
               ) : (
                 <>
-                  Add to Estimate <Plus className="ml-2 h-4 w-4" />
+                  Add to Estimate <Plus className="group ml-2 h-4 w-4 group-hover:animate-spin-once" />
                 </>
               )}
             </Button>
@@ -976,7 +976,6 @@ export default function Home() {
       </div>
       <ArtworkPopup
         isOpen={isArtworkPopupOpen}
-        onClose={() => setIsArtworkPopupOpen(false)}
         printLocations={Number(watch("printLocations"))}
         onConfirm={handleArtworkConfirm}
       />
