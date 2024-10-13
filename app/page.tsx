@@ -10,7 +10,7 @@ import {
   Controller,
 } from "react-hook-form";
 import Image from "next/image";
-import { Moon, Sun, Plus, Pin, Minus, X } from "lucide-react";
+import { Moon, Sun, Plus, Receipt, Pin, Minus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -363,6 +363,7 @@ export default function Home() {
   const [isNamePromptOpen, setIsNamePromptOpen] = useState(false);
   const [estimateName, setEstimateName] = useState("");
   const [showAddToEstimate, setShowAddToEstimate] = useState(true);
+  const [isFirstEstimate, setIsFirstEstimate] = useState(true);
 
   const {
     register,
@@ -400,6 +401,7 @@ export default function Home() {
   };
 
   const addToEstimate: SubmitHandler<FormInputs> = (data) => {
+    setIsFirstEstimate(false);
     setFormError("");
     clearErrors();
 
@@ -433,6 +435,12 @@ export default function Home() {
     } else {
       processEstimate(data, 1); // Pass 1 as the screen fee multiplier for single location prints
     }
+
+    // Show success toast
+    toast({
+      title: "Estimate Added",
+      description: "(hint: click &apos;Add to Estimate +&apos; to add more to your order)",
+    });
   };
 
   const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
@@ -527,8 +535,8 @@ export default function Home() {
       setIsNamePromptOpen(false);
       setEstimateName("");
       toast({
-        title: "Estimate Pinned",
-        description: `"${estimateName}" has been pinned`,
+        title:`"${estimateName}" has been pinned`,
+        description: "(hint: feel free to start over, your pinned estimates are safe!)",
         action: (
           <ToastAction
             altText="View Estimate"
@@ -567,6 +575,7 @@ export default function Home() {
         "Current Estimate Cleared",
       description: "(hint: pinned estimates are safe!)",
     });
+    setIsFirstEstimate(true);
   };
 
   const handleDeleteConfirm = () => {
@@ -647,7 +656,7 @@ export default function Home() {
           </ul>
         </div>
 
-        {(isEstimateCalculated || currentEstimate) && (
+        {(isEstimateCalculated || currentEstimate) && !isFirstEstimate && (
           <>
             <Button
               onClick={() => setIsNewEstimateDialogOpen(true)}
@@ -828,9 +837,21 @@ export default function Home() {
           {showAddToEstimate && (
             <Button
               type="submit"
-              className="w-full bg-violet-950 font-semibold text-white hover:dark:bg-violet-700"
+              className={`w-full font-semibold text-white ${
+                isFirstEstimate
+                  ? "bg-pink-600 hover:bg-pink-400"
+                  : "bg-violet-950 hover:dark:bg-violet-700"
+              }`}
             >
-              Add to Estimate <Plus className="ml-2 h-4 w-4" />
+              {isFirstEstimate ? (
+                <>
+                  Create an Estimate <Receipt className="ml-2 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Add to Estimate <Plus className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           )}
           {formError && <p className="text-red-500">{formError}</p>}
