@@ -564,8 +564,8 @@ export default function Home() {
     setShowAddToEstimate(true); // Reset this when clearing the estimate
     toast({
       title:
-        "Current Estimate Cleared (Don't worry, your pinned ones are safe!)",
-      description: "You can now start a new estimate.",
+        "Current Estimate Cleared",
+      description: "(hint: pinned estimates are safe!)",
     });
   };
 
@@ -621,26 +621,27 @@ export default function Home() {
           <h2 className="font-extrabold mb-4">Follow these steps to create your estimate:</h2>
           <ul className="list-none space-y-2">
             <li>
-              • 👕 Select a Brand and identify the brightness of your fabric{" "}
-              <br /> (please note: darker colored fabrics require a white ink
-              underbase)
+              • 👕 Select a Brand and identify the brightness of your fabric
+              <p className="text-sm font-extralight ml-6">
+                (hint: darker colored fabrics require a white ink underbase)
+              </p>
             </li>
             <li>
               • ➕ Use &quot;Add to Estimate&quot; for multi-part estimates
-              <br /> (e.g., designs for both light and dark garments or
-              combining blanks from multiple brands)
+              <p className="text-sm font-extralight ml-6">
+                (hint: orders with both dark and light garments or combining blanks from multiple brands)
+              </p>
             </li>
             <li>
               • 🖼️ Add multiple print locations for each design
-              <br /> (e.g., full back + front left-chest pocket)
+              <p className="text-sm font-extralight ml-6">
+                (hint: for example, a full back + front left-chest pocket)
+              </p>
             </li>
             <li>
               • 🏷️ Fill out the form separately for each design and each brand
               of blanks
             </li>
-            <li>• 🔢 Input quantities for each size</li>
-            <li>• 💡 Provide any additional details or requirements</li>
-            <li>• 🧮 Click &apos;Calculate&apos; to get your estimate</li>
             <li>• 📌 Pin estimates to save them for later</li>
             <li>• 🔄 Use &apos;New Estimate&apos; to start over at any time</li>
           </ul>
