@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from 'next/script'
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -36,9 +36,8 @@ export default function RootLayout({
         "min-h-screen bg-background font-sans antialiased",
         "dark:bg-black dark:text-white"
       )}>
-        <TooltipProvider>
           {children}
-        </TooltipProvider>
+        <Analytics />
         <Toaster />
         <Script id="disable-zoom" strategy="afterInteractive">
           {`

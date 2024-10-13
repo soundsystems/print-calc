@@ -846,7 +846,7 @@ export default function Home() {
         )}
 
         {isEstimateCalculated && (
-          <Button type="button" onClick={resetEstimate} className="mt-4 w-full">
+          <Button type="button" onClick={resetEstimate} className="mt-4 w-full hover:text-white hover:bg-red-800 transition-colors">
             Start Over
           </Button>
         )}
