@@ -646,7 +646,7 @@ export default function Home() {
               </p>
             </li>
             <li>
-              • 🖼️ Add multiple print locations for each design
+              • 🖼️ Add multiple graphic placements for each design
               <p className="text-sm font-extralight ml-6">
                 (hint: for example, a full back + front left-chest pocket)
               </p>
@@ -759,14 +759,14 @@ export default function Home() {
             <Controller
               name="printLocations"
               control={control}
-              rules={{ required: "Print locations are required" }}
+              rules={{ required: "Graphic placements are required" }}
               render={({ field }) => (
                 <Select
                   onValueChange={field.onChange}
                   value={field.value?.toString()}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select print locations" />
+                    <SelectValue placeholder="Select number of graphic placements" />
                   </SelectTrigger>
                   <SelectContent>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
