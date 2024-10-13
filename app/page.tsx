@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useForm,
   SubmitHandler,
@@ -95,7 +95,7 @@ interface Estimate {
   total: number;
   name?: string;
   isPinned?: boolean;
-  screenFee: number;
+  setupFee: number;
 }
 
 interface EstimateItem {
@@ -113,10 +113,10 @@ interface EstimateItem {
 }
 
 const items: Item[] = [
-  { name: "T-Shirt", unitPrice: 5, darkUnitPrice: 6, emoji: "👕" },
-  { name: "Crewneck", unitPrice: 11, darkUnitPrice: 13, emoji: "⛴️" },
-  { name: "Hoodie", unitPrice: 18, darkUnitPrice: 20, emoji: "🥷🏿" },
-  { name: "Long Sleeve", unitPrice: 9, darkUnitPrice: 11, emoji: "🥼" },
+  { name: "T-Shirts", unitPrice: 5, darkUnitPrice: 6, emoji: "👕" },
+  { name: "Crewnecks", unitPrice: 11, darkUnitPrice: 13, emoji: "⛴️" },
+  { name: "Hoodies", unitPrice: 18, darkUnitPrice: 20, emoji: "🥷🏿" },
+  { name: "Long Sleeves", unitPrice: 9, darkUnitPrice: 11, emoji: "🥼" },
 ];
 
 const brands = ["Gildan", "Bella + Canvas", "Next Level", "American Apparel"];
@@ -349,13 +349,26 @@ const groupEstimateItems = (
   return finalGroupedItems;
 };
 
+
+
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentEstimate, setCurrentEstimate] = useState<Estimate | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showCalculateButton, setShowCalculateButton] = useState(false);
   const [isArtworkPopupOpen, setIsArtworkPopupOpen] = useState(false);
-  const [pinnedEstimates, setPinnedEstimates] = useState<Estimate[]>([]);
+  const [pinnedEstimates, setPinnedEstimates] = useState<Estimate[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pinnedEstimates');
+      if (saved) {
+        return JSON.parse(saved).map((estimate: Estimate) => ({
+          ...estimate,
+          setupFee: estimate.setupFee || 0, // Ensure backward compatibility
+        }));
+      }
+    }
+    return [];
+  });
   const [formError, setFormError] = useState("");
   const [isEstimateCalculated, setIsEstimateCalculated] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -384,6 +397,22 @@ export default function Home() {
     },
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pinnedEstimates', JSON.stringify(pinnedEstimates));
+    }
+  }, [pinnedEstimates]);
+
+  const deletePinnedEstimate = (estimateId: string) => {
+    setPinnedEstimates((prevEstimates: Estimate[]) => 
+      prevEstimates.filter((estimate: Estimate) => estimate.id !== estimateId)
+    );
+    toast({
+      title: "Estimate unpinned",
+      description: "The estimate has been removed from your pinned list.",
+    });
+  };
 
   const resetFormFields = () => {
     reset({
@@ -437,7 +466,7 @@ export default function Home() {
     }
   };
 
-  const processEstimate = (data: FormInputs, screenFeeMultiplier: number) => {
+  const processEstimate = (data: FormInputs, setupFee: number) => {
     const newItems = items
       .map((item) => {
         const quantity = Number(data[`gmt${item.name}`]) || 0;
@@ -446,8 +475,9 @@ export default function Home() {
         const isDark = data.garmentColor === "dark";
         const darkUnitPrice = isDark ? unitPrice + 1 : unitPrice;
         const printCost = calculatePrintCost(
-          Number(data.colorCount),
+          quantity,
           Number(data.printLocations),
+          Number(data.colorCount)
         );
         return {
           ...item,
@@ -463,22 +493,23 @@ export default function Home() {
         } as EstimateItem;
       })
       .filter((item): item is EstimateItem => item !== null);
+
     const total = newItems.reduce((sum, item) => sum + item.total, 0);
-    const screenFee = calculateScreenFee(newItems, screenFeeMultiplier);
+
     setCurrentEstimate((prevEstimate) => {
       if (prevEstimate) {
         return {
           ...prevEstimate,
           parts: [...prevEstimate.parts, ...newItems],
-          total: prevEstimate.total + total + screenFee,
-          screenFee: prevEstimate.screenFee + screenFee,
+          total: prevEstimate.total + total + setupFee,
+          setupFee: prevEstimate.setupFee + setupFee,
         };
       } else {
         return {
           id: Date.now().toString(),
           parts: newItems,
-          total: total + screenFee,
-          screenFee,
+          total: total + setupFee,
+          setupFee,
         };
       }
     });
@@ -494,22 +525,24 @@ export default function Home() {
     }
   };
 
-  const calculatePrintCost = (
-    colorCount: number,
-    printLocations: number,
-  ): number => {
-    // This is a placeholder. Adjust the calculation based on your actual pricing strategy.
-    return colorCount * printLocations * 0.5;
+  const calculatePrintFeePerPiece = (quantity: number, colors: number): number => {
+    let baseFee: number;
+    if (quantity < 24) baseFee = 2.50;
+    else if (quantity < 48) baseFee = 2.00;
+    else if (quantity < 72) baseFee = 1.50;
+    else if (quantity < 144) baseFee = 1.25;
+    else if (quantity < 288) baseFee = 1.00;
+    else baseFee = 0.75;
+  
+    // Adjust fee based on number of colors
+    const colorMultiplier = 1 + (colors - 1) * 0.5; // Each additional color adds 50% to the base price
+    return baseFee * colorMultiplier;
   };
 
-  const calculateScreenFee = (
-    items: EstimateItem[],
-    screenFeeMultiplier: number,
-  ): number => {
-    if (items.length === 0) return 0;
-    const uniqueLocations = new Set(items.map((item) => item.printLocations));
-    return uniqueLocations.size * 20 * screenFeeMultiplier;
-  };
+const calculatePrintCost = (quantity: number, locations: number, colors: number): number => {
+  const printFeePerPiece = calculatePrintFeePerPiece(quantity, colors);
+  return quantity * locations * printFeePerPiece;
+};
 
   const pinEstimate = () => {
     if (!currentEstimate) return;
@@ -520,16 +553,17 @@ export default function Home() {
     if (estimateName && currentEstimate) {
       const pinnedEstimate: Estimate = {
         ...currentEstimate,
+        id: Date.now().toString(),
         name: estimateName,
         isPinned: true,
       };
-      setPinnedEstimates((prevEstimates) => [...prevEstimates, pinnedEstimate]);
+      setPinnedEstimates((prevEstimates: Estimate[]) => [...prevEstimates, pinnedEstimate]);
       setCurrentEstimate(null);
       setIsDrawerOpen(false);
       setIsNamePromptOpen(false);
       setEstimateName("");
       toast({
-        title:`"${estimateName}" has been pinned`,
+        title: `"${estimateName}" has been pinned`,
         description: "(hint: feel free to start over, your pinned estimates are safe!)",
         action: (
           <ToastAction
@@ -950,7 +984,7 @@ export default function Home() {
                     </div>
                   ))}
                   <div className="mt-4">
-                    <p>Screen Fee: ${currentEstimate.screenFee.toFixed(2)}</p>
+                    <p>Setup Fee: ${currentEstimate.setupFee.toFixed(2)}</p>
                     <p className="font-bold">
                       Total: ${currentEstimate.total.toFixed(2)}
                     </p>
@@ -1015,11 +1049,18 @@ export default function Home() {
           Pinned 📌
         </h2>
         <div className="w-full max-w-md">
-          {pinnedEstimates.map((estimate, index) => (
+          {pinnedEstimates.map((estimate: Estimate) => (
             <div
-              key={index}
-              className="mb-4 rounded-lg bg-white p-4 shadow dark:bg-black"
+              key={estimate.id}
+              className="mb-4 rounded-lg bg-white p-4 shadow dark:bg-black relative"
             >
+              <button
+                onClick={() => deletePinnedEstimate(estimate.id)}
+                className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center"
+                aria-label="Delete pinned estimate"
+              >
+                <X className="h-4 w-4 bg-black hover:text-red-800" />
+              </button>
               <h3 className="text-lg font-semibold">{estimate.name}</h3>
               <p className="mt-2 font-bold">
                 Total: ${estimate.total.toFixed(2)}

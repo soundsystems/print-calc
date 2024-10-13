@@ -22,8 +22,9 @@ export function ArtworkPopup({ isOpen, printLocations, onConfirm }: ArtworkPopup
   }, [isOpen]);
 
   const handleConfirm = async (sameArtwork: boolean) => {
-    const screenFeeMultiplier = sameArtwork ? 1 : (printLocations > 2 ? uniqueCount : 2);
-    await onConfirm(sameArtwork, screenFeeMultiplier);
+    const uniquePlacements = sameArtwork ? 1 : (printLocations > 2 ? uniqueCount : 2);
+    const setupFee = uniquePlacements * 20; // $20 fixed Screen Fee per placement
+    await onConfirm(sameArtwork, setupFee);
   };
 
   return (
